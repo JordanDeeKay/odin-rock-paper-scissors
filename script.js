@@ -1,73 +1,57 @@
-function getComputerChoice() {
-    const moveOptions = ['Rock', 'Paper', 'Scissors'];
-    let choice = Math.floor(Math.random() * moveOptions.length);
-
-    return moveOptions[choice];
+const getComputerChoice = () => {
+    const choices = ['rock', 'paper', 'scissors'];
+    const randomNumber = Math.floor(Math.random() * 3);
+    return choices[randomNumber];
 }
 
-function getPlayerChoice() {
-    let choice = prompt('Rock, Paper, Scissors!');
-
-    return choice;
+const capitalize = (word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-function playRound(computerSelection, playerSelection) {
-    let result = '';
-    
-    if (playerSelection.toUpperCase() === 'ROCK') {
-        if (computerSelection.toUpperCase() === 'ROCK') {
-            result = "It's a tie! You have both selected Rock!";
-        } else if (computerSelection.toUpperCase() === 'PAPER') {
-            result = "You lose! Rock loses to Paper!";
-        } else if (computerSelection.toUpperCase() === 'SCISSORS') {
-            result = "You win! Rock beats Scissors!";
-        }
-    } else if (playerSelection.toUpperCase() === 'PAPER') {
-        if (computerSelection.toUpperCase() === 'ROCK') {
-            result = "You win! Paper beats Rock!";
-        } else if (computerSelection.toUpperCase() === 'PAPER') {
-            result = "It's a tie! You both selected Paper!";
-        } else if (computerSelection.toUpperCase() === 'SCISSORS') {
-            result = "You lose! Paper loses to Scissors!";
-        }
-    } else if (playerSelection.toUpperCase() === 'SCISSORS') {
-        if (computerSelection.toUpperCase() === 'ROCK') {
-            result = "You lose! Scissors loses to Rock!";
-        } else if (computerSelection.toUpperCase() === 'PAPER') {
-            result = "You win! Scissors beats Paper!";
-        } else if (computerSelection.toUpperCase() === 'SCISSORS') {
-            result = "It's a tie! You both selected Scissors!";
-        }
+let playerScore = 0;
+let computerScore = 0;
+
+const updateScore = (result) => {
+    if (result.includes('Win')) {
+        playerScore++;
+    } else if (result.includes('Lose')) {
+        computerScore++;
     }
 
-    return result;
-}
+    document.getElementById('score').textContent = `Score - Player: ${playerScore}, Computer: ${computerScore}`;
 
-function playGame() {
-    let playerScore = 0;
-    let computerScore = 0;
-
-    for (let i = 0; i < 5; i++) {
-        let playerChoice = getPlayerChoice();
-        let computerChoice = getComputerChoice();
-        let result = playRound(computerChoice, playerChoice);
-
-        if (result.includes('win')) {
-            playerScore += 1;
-        } else if (result.includes('lose')) {
-            computerScore += 1;
-        }
-
-        console.log(result);
-    }
-
-    if (playerScore > computerScore) {
-        console.log('Congratulations, you won the match!', '\n', 'Player Score:', playerScore, '\n', 'Computer Score:', computerScore);
-    } else if (playerScore < computerScore) {
-        console.log('Sorry, you lost the match. Better luck next time!', '\n', 'Player Score:', playerScore, '\n', 'Computer Score:', computerScore);
-    } else if (playerScore === computerScore) {
-        console.log("What a close match! It's a tie!", '\n', 'Player Score:', playerScore, '\n', 'Computer Score:', computerScore);
+    if (playerScore === 5 || computerScore === 5) {
+        const winner = playerScore === 5 ? 'Player' : 'Computer';
+        document.getElementById('winner').textContent = `Game Over! ${winner} wins!`;
+        playerScore = 0;
+        computerScore = 0;
     }
 }
 
-playGame();
+const playRound = (playerSelection, computerSelection) => {
+    // Convert playerSelection to lower case for case-insensitivity
+    const playerChoice = playerSelection.toLowerCase();
+
+    // Function to determine the winner
+    const determineWinner = (player, computer) => {
+        if (player === computer) {
+            return "It's a tie! Let's play again.";
+        }
+        if (
+            (player === 'rock' && computer === 'scissors') ||
+            (player === 'scissors' && computer === 'paper') ||
+            (player === 'paper' && computer === 'rock')
+        ) {
+            return `You Win! ${capitalize(player)} beats ${capitalize(computer)}`;
+        }
+        return `You Lose! ${capitalize(computer)} beats ${capitalize(player)}`;
+    }
+
+    const result = determineWinner(playerChoice, computerSelection);
+    document.getElementById('results').textContent = result;
+    updateScore(result);
+}
+
+document.getElementById('rock').addEventListener('click', () => playRound('rock', getComputerChoice()));
+document.getElementById('paper').addEventListener('click', () => playRound('paper', getComputerChoice()));
+document.getElementById('scissors').addEventListener('click', () => playRound('scissors', getComputerChoice()));
